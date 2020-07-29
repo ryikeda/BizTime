@@ -55,4 +55,21 @@ router.post("/", async (req, res, next) => {
   }
 });
 
+// PUT Route
+router.put("/:id", async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { amt } = req.body;
+    const results = await db.query(
+      `UPDATE invoices SET amt=$1 WHERE id=$2
+      RETURNING id, comp_code, amt, paid, add_date, paid_date`,
+      [amt, id]
+    );
+    if (!results.rows.length)
+      throw new ExpressError(`Invoice with id:${id} not found`, 404);
+    return res.json({ invoice: results.rows[0] });
+  } catch (err) {
+    return next(err);
+  }
+});
 module.exports = router;
