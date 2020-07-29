@@ -35,8 +35,24 @@ router.post("/", async (req, res, next) => {
       `INSERT INTO companies (code, name, description) VALUES ($1, $2, $3) RETURNING code, name, description`,
       [code, name, description]
     );
-    debugger;
     return res.status(201).json({ company: results.rows[0] });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+// PUT Routes
+router.put("/:code", async (req, res, next) => {
+  try {
+    const { code } = req.params;
+    const { name, description } = req.body;
+    const results = await db.query(
+      `UPDATE companies SET name=$1, description=$2 WHERE code =$3 RETURNING code, name, description`,
+      [name, description, code]
+    );
+    if (!results.rows.length)
+      throw new ExpressError(`No company found with code: ${code}`, 404);
+    return res.send({ company: results.rows });
   } catch (err) {
     return next(err);
   }
