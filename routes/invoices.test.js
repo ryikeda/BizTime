@@ -27,7 +27,6 @@ afterAll(async () => {
 
 describe("test test", () => {
   test("test", async () => {
-    console.log(testInvoice);
     expect(1).toEqual(1);
   });
 });
